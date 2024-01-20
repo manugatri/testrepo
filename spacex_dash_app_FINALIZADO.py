@@ -39,30 +39,31 @@ app.layout = html.Div(children=[html.H1('SpaceX Launch Records Dashboard',
                                 # TASK 2: Añadir un gráfico circular para mostrar el recuento total de lanzamientos con éxito de todos los sitios.
                                 # Si se ha seleccionado un punto de lanzamiento específico, se muestra el recuento de éxitos y fracasos del punto.
                     
-                                html.Div(dcc.Graph(id='success-pie-chart')),
+                                html.Div([dcc.Graph(id='success-pie-chart', className='pastel', style={'display':'flex'}),]),
+
                                 html.Br(),
 
 
 
-                    html.P("Payload range (Kg):"),
-                    # TASK 3: Add a slider to select payload range
-                    dcc.RangeSlider(id='payload-slider',
-                        min=0,
-                        max=10000,
-                        step=1000,
-                        marks={0: '0',
-                        100: '100Kg',
-                        500: '500Kg',
-                        1500: '1500Kg',
-                        2500: '2500Kg',
-                        5000: '5000Kg',
-                        6500: '6500Kg',
-                        10000: '10000Kg'},
-                        value=[1000, 10000]),
+                                html.P("Payload range (Kg):"),
+                                # TASK 3: Add a slider to select payload range
+                                dcc.RangeSlider(id='payload-slider',
+                                    min=0,
+                                    max=10000,
+                                    step=1000,
+                                    marks={0: '0',
+                                    100: '100Kg',
+                                    500: '500Kg',
+                                    1500: '1500Kg',
+                                    2500: '2500Kg',
+                                    5000: '5000Kg',
+                                    6500: '6500Kg',
+                                    10000: '10000Kg'},
+                                    value=[1000, 10000]),
 
-                    # TASK 4: Añadir un gráfico de dispersión para mostrar la correlación entre la carga útil y el éxito del lanzamiento.
-                    html.Div(dcc.Graph(id='success-payload-scatter-chart')),
-                    ])
+                                # TASK 4: Añadir un gráfico de dispersión para mostrar la correlación entre la carga útil y el éxito del lanzamiento.
+                                html.Div(dcc.Graph(id='success-payload-scatter-chart')),
+                                ])
 
 
 
@@ -87,9 +88,12 @@ def get_pie_chart(entered_site):
     else:
         filtered_df = spacex_df[spacex_df['Launch Site']==entered_site]
         filtered_df = filtered_df.groupby('class').size().reset_index(name='total')
-        fig = px.pie(filtered_df, values='total',names='class', title=f"Total de lanzamientos'{entered_site}")
+        fig = px.pie(filtered_df, values='total',names='class', title=f"Total de lanzamientos {entered_site}")
 
         return fig
+
+get_pie_chart('ALL')
+
 
 # TASK 4:
 # Añadir una función de callback para `site-dropdown` y `payload-slider` como entradas, `success-payload-scatter-chart` como salida.
@@ -106,16 +110,18 @@ def get_scatter_chart(entered_site, payload_slider):
         fig=px.scatter(filtered_df,
             y="class",
             x="Payload Mass (kg)",
-            color="Booster Version Category")
+            color="Booster Version Category",
+            title="Lanzamientos realizados desde todos los Launch Site")
         return fig
 
     else:
         filtered_df = spacex_df[spacex_df['Launch Site'] == entered_site]
         fig= px.scatter(filtered_df,
-                        y="Payload Mass (kg)",
-                        x='class',
+                        x="Payload Mass (kg)",
+                        y='class',
                         color='Booster Version Category',
-                        symbol='Booster Version Category'
+                        symbol='Booster Version Category',
+                        title=f"Total de lanzamientos realizados desde Launch Site {entered_site}"
                         )
     return fig
 
